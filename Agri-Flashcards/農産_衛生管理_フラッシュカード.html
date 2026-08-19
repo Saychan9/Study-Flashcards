@@ -1171,11 +1171,20 @@ function nextQuestion() {
   current++;
   if (current >= quizCards.length) {
     document.getElementById("score").textContent = "終了";
+    const allWrongCleared = quizMode === "wrong" && getWrongIds().length === 0;
+    const endButtonLabel = allWrongCleared
+      ? "開始画面に戻る"
+      : quizMode === "wrong"
+        ? "間違い問題をもう一度"
+        : quizSource === "full"
+          ? "全問出題をもう一度"
+          : "もう一度ランダム出題";
+    const endButtonAction = allWrongCleared ? "resetQuiz()" : "restartCurrentQuiz()";
     document.getElementById("quiz").innerHTML = `
       <div class="card done">
         <h2>🎉 お疲れさまでした！</h2>
         <p>${quizCards.length}問すべて終了しました。<br>現在の間違い登録：${getWrongIds().length}問</p>
-        <button class="primary" onclick="restartCurrentQuiz()">${quizMode === "wrong" ? "間違い問題をもう一度" : quizSource === "full" ? "全問出題をもう一度" : "もう一度ランダム出題"}</button>
+        <button class="primary" onclick="${endButtonAction}">${endButtonLabel}</button>
       </div>`;
   } else {
     renderQuestion();
