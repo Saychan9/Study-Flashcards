@@ -937,7 +937,7 @@ const cards = [
 ["カード21","実技の手洗いは何分間？","1分間。",true],
 ["カード22","拭取検査をする場所は？","包丁（保管分）の刃。\nアルコールスプレーボトルのヘッド部分。"],
 ["カード23","農産では何を確認しながら製造する？","製造仕様書を確認しながら製造する。"],
-["カード24","農産のラベル貼付時に何をする？","3点一致を指さし、声出し確認をして、ラベルを貼付する。"],
+["カード24","農産のラベル貼付時に何をする？","仕様書・値段・産地の3点が一致していることを指差し・声出しで確認して、ラベルを貼付する。"],
 ["カード25","白衣の交換頻度は？","日曜日と水曜日の週2回。",true],
 
 ["カード26","まな板へのアルコールは？","15センチ離して、10センチ間隔。",true],
@@ -1046,7 +1046,7 @@ function renderQuestion() {
           <button class="primary" onclick="showAnswer()">答えを見る</button>
           <button class="secondary" onclick="nextQuestion()">判定せず次へ ▶</button>
         </div>
-        <div id="answer" class="answer"><strong>正解：</strong>${escapeHtml(q[2])}</div>
+        <div id="answer" class="answer"><strong>正解：</strong><br>${escapeHtml(q[2])}</div>
         <div id="markActions" class="mark-actions">
           <button class="correct" onclick="markAnswer(true)">正解だった</button>
           <button class="wrong" onclick="markAnswer(false)">間違えた</button>
