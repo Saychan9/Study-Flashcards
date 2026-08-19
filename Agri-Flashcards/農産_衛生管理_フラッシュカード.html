@@ -1118,7 +1118,9 @@ function manageWrongCards() {
       <div class="card done">
         <h2>間違い問題はありません</h2>
         <p>問題を解いて「間違えた」を押すと、ここに登録されます。</p>
-        <button class="primary" onclick="resetQuiz()">戻る</button>
+        <div class="mode-back-action">
+          <button class="primary" onclick="resetQuiz()">戻る</button>
+        </div>
       </div>`;
     return;
   }
