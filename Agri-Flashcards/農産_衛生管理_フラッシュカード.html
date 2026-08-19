@@ -200,6 +200,12 @@
     margin: 0;
     letter-spacing: -.02em;
     flex: none;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  h1:hover {
+    color: var(--primary-dark);
   }
 
   .wrap::before {
@@ -855,11 +861,10 @@
 <body>
 <div class="wrap">
   <div class="header-row">
-    <h1>🌱 農産・衛生管理 フラッシュカード</h1>
+    <h1 role="button" tabindex="0" title="最初に戻る" onclick="resetQuiz()" onkeydown="if(event.key === 'Enter' || event.key === ' ') resetQuiz()">🌱 農産・衛生管理 フラッシュカード</h1>
     <div class="utility-actions mobile-utility">
       <button class="secondary" onclick="showReference()">問題一覧</button>
-      <button class="secondary" onclick="showManual()">説明書</button>
-      <button class="secondary" onclick="resetQuiz()">最初に戻る</button>
+      <button class="secondary" onclick="showManual()">使い方</button>
     </div>
   </div>
 
@@ -872,8 +877,7 @@
     </div>
     <div class="utility-actions desktop-utility">
       <button class="secondary" onclick="showReference()">問題一覧</button>
-      <button class="secondary" onclick="showManual()">説明書</button>
-      <button class="secondary" onclick="resetQuiz()">最初に戻る</button>
+      <button class="secondary" onclick="showManual()">使い方</button>
     </div>
   </div>
 
@@ -903,7 +907,7 @@
     <h3>間違い問題を管理する方法</h3>
     <p>「間違いを復習（件数）」では保存された問題だけを復習できます。「間違いを整理」では、問題を個別に選択して削除できます。全選択してから削除することもできます。</p>
     <h3>各ボタンについて</h3>
-    <p>「最初に戻る」は現在のテストを終了する機能です。間違い登録は消えません。間違い登録は同じブラウザ内に保存され、別の端末やブラウザには自動で共有されません。</p>
+    <p>タイトルを押すと現在のテストを終了して開始画面に戻れます。間違い登録は消えません。間違い登録は同じブラウザ内に保存され、別の端末やブラウザには自動で共有されません。</p>
     <button class="secondary" onclick="hideManual()">閉じる</button>
   </div>
 </div>
@@ -1083,7 +1087,6 @@ function showReference() {
   document.getElementById("quiz").innerHTML = `
     <div class="card">
       <div class="meta">問題と答え一覧</div>
-      <div class="question">全${cards.length}問の問題文と正解文を確認できます。</div>
       <div class="reference-list">
         ${cards.map(card => `
           <section class="reference-item">
@@ -1092,7 +1095,7 @@ function showReference() {
             <p><span class="answer-label">正解：</span>${escapeHtml(card[2])}</p>
           </section>`).join("")}
       </div>
-      <div class="actions">
+      <div class="mode-back-action">
         <button class="secondary" onclick="resetQuiz()">戻る</button>
       </div>
     </div>`;
