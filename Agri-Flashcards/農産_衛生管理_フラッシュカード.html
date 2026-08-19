@@ -178,6 +178,19 @@
     font-size: 12px;
   }
 
+  /* PC utility buttons: keep the same connected shape as the study bar */
+  .desktop-utility button {
+    border-radius: 0;
+  }
+
+  .desktop-utility button:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .desktop-utility button:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+
   h1 {
     display: flex;
     align-items: center;
@@ -378,6 +391,27 @@
     flex: none;
   }
 
+  .mode-choice-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: min(100%, 620px);
+    margin: 18px auto 0;
+  }
+
+  .mode-choice-actions button {
+    min-height: 44px;
+  }
+
+  .mode-back-action {
+    width: min(100%, 220px);
+    margin: 12px auto 0;
+  }
+
+  .mode-back-action button {
+    width: 100%;
+  }
+
   .answer {
     display: none;
     margin-top: 9px;
@@ -458,6 +492,43 @@
     gap: 8px;
     width: 100%;
     margin: 8px 0;
+  }
+
+  .reference-list {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 2px 8px;
+  }
+
+  .reference-item {
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    box-shadow: 0 3px 10px rgba(31, 67, 54, .04);
+  }
+
+  .reference-item h3 {
+    margin: 0 0 5px;
+    color: var(--primary-dark);
+    font-size: 12px;
+  }
+
+  .reference-item p {
+    margin: 3px 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  .reference-item .answer-label {
+    color: var(--muted);
+    font-weight: 800;
   }
 
   .manual-overlay {
@@ -599,6 +670,19 @@
       font-size: 9px;
     }
 
+    .reference-item {
+      padding: 8px 9px;
+    }
+
+    .reference-item h3 {
+      font-size: 11px;
+    }
+
+    .reference-item p {
+      font-size: 11.5px;
+      line-height: 1.45;
+    }
+
     .top-menu {
       display: block;
       margin: 6px 0 5px;
@@ -723,6 +807,23 @@
       margin-top: 5px;
     }
 
+    .mode-choice-actions {
+      gap: 6px;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .mode-choice-actions button {
+      min-height: 38px;
+      padding: 5px 3px;
+      font-size: 11px;
+    }
+
+    .mode-back-action {
+      width: min(100%, 180px);
+      margin-top: 8px;
+    }
+
     .actions button,
     .mark-actions button {
       min-height: 32px;
@@ -756,6 +857,7 @@
   <div class="header-row">
     <h1>🌱 農産・衛生管理 フラッシュカード</h1>
     <div class="utility-actions mobile-utility">
+      <button class="secondary" onclick="showReference()">問題一覧</button>
       <button class="secondary" onclick="showManual()">説明書</button>
       <button class="secondary" onclick="resetQuiz()">最初に戻る</button>
     </div>
@@ -764,11 +866,12 @@
   <div class="top-menu">
     <div class="study-actions">
       <button class="primary" onclick="startQuiz(10)">10問ランダム</button>
-      <button class="secondary" onclick="startQuiz(cards.length)">全問出題</button>
+      <button class="secondary" onclick="chooseFullQuizMode()">全問出題</button>
       <button class="secondary review-button" id="wrongQuizButton" onclick="startWrongQuiz()">間違いを復習（0）</button>
       <button class="secondary review-button" onclick="manageWrongCards()">間違いを整理</button>
     </div>
     <div class="utility-actions desktop-utility">
+      <button class="secondary" onclick="showReference()">問題一覧</button>
       <button class="secondary" onclick="showManual()">説明書</button>
       <button class="secondary" onclick="resetQuiz()">最初に戻る</button>
     </div>
@@ -838,12 +941,13 @@ const cards = [
 ["カード28","水5リットルに漂白剤は？","20ミリリットル。",true],
 ["カード29","まな板の殺菌時間は？","15分。",true],
 ["カード30","手洗いは何分間？","1分間。",true],
-["カード31","白衣の交換は？","日曜日と水曜日、週2回。",true]
 ];
 
 let quizCards = [];
 let current = 0;
 let quizMode = "normal";
+let quizSource = "random10";
+let fullQuizOrder = "random";
 const WRONG_KEY = "agriFlashcardWrongIds";
 
 function getWrongIds() {
@@ -867,6 +971,7 @@ function updateWrongCount() {
 function startWrongQuiz() {
   const wrongIds = getWrongIds();
   quizMode = "wrong";
+  quizSource = "wrong";
   quizCards = shuffle(cards.filter(card => wrongIds.includes(card[0])));
   current = 0;
   if (quizCards.length === 0) {
@@ -887,7 +992,34 @@ function shuffle(arr) {
 
 function startQuiz(count) {
   quizMode = "normal";
+  quizSource = "random10";
   quizCards = shuffle(cards).slice(0, count);
+  current = 0;
+  renderQuestion();
+}
+
+function chooseFullQuizMode() {
+  document.getElementById("score").textContent = "全問出題の形式を選択してください。";
+  document.getElementById("quiz").innerHTML = `
+    <div class="card done">
+      <div class="meta">全問出題（${cards.length}問）</div>
+      <h2>出題順を選んでください</h2>
+      <p>${cards.length}問を順番に出題するか、ランダムな順番で出題するかを選択できます。</p>
+      <div class="mode-choice-actions">
+        <button class="primary" onclick="startFullQuiz('sequential')">順番に出題</button>
+        <button class="secondary" onclick="startFullQuiz('random')">ランダムに出題</button>
+      </div>
+      <div class="mode-back-action">
+        <button class="secondary" onclick="resetQuiz()">戻る</button>
+      </div>
+    </div>`;
+}
+
+function startFullQuiz(order) {
+  quizMode = "normal";
+  quizSource = "full";
+  fullQuizOrder = order;
+  quizCards = order === "sequential" ? [...cards] : shuffle(cards);
   current = 0;
   renderQuestion();
 }
@@ -923,6 +1055,7 @@ function renderQuestion() {
 
 function resetQuiz() {
   quizMode = "normal";
+  quizSource = "random10";
   quizCards = [];
   current = 0;
   document.getElementById("score").textContent = "出題方法を選んでください。";
@@ -942,6 +1075,27 @@ function markAnswer(isCorrect) {
     : [...wrongIds, cardId];
   saveWrongIds(updatedIds);
   nextQuestion();
+}
+
+function showReference() {
+  quizMode = "reference";
+  document.getElementById("score").textContent = `問題と答え一覧（${cards.length}問）`;
+  document.getElementById("quiz").innerHTML = `
+    <div class="card">
+      <div class="meta">問題と答え一覧</div>
+      <div class="question">全${cards.length}問の問題文と正解文を確認できます。</div>
+      <div class="reference-list">
+        ${cards.map(card => `
+          <section class="reference-item">
+            <h3>${escapeHtml(card[0])}</h3>
+            <p><span class="answer-label">問題：</span>${escapeHtml(card[1])}</p>
+            <p><span class="answer-label">正解：</span>${escapeHtml(card[2])}</p>
+          </section>`).join("")}
+      </div>
+      <div class="actions">
+        <button class="secondary" onclick="resetQuiz()">戻る</button>
+      </div>
+    </div>`;
 }
 
 function showManual() {
@@ -1016,7 +1170,7 @@ function nextQuestion() {
       <div class="card done">
         <h2>🎉 お疲れさまでした！</h2>
         <p>${quizCards.length}問すべて終了しました。<br>現在の間違い登録：${getWrongIds().length}問</p>
-        <button class="primary" onclick="${quizMode === "wrong" ? "startWrongQuiz()" : `startQuiz(${quizCards.length})`}">${quizMode === "wrong" ? "間違い問題をもう一度" : "もう一度ランダム出題"}</button>
+        <button class="primary" onclick="restartCurrentQuiz()">${quizMode === "wrong" ? "間違い問題をもう一度" : quizSource === "full" ? "全問出題をもう一度" : "もう一度ランダム出題"}</button>
       </div>`;
   } else {
     renderQuestion();
@@ -1024,6 +1178,16 @@ function nextQuestion() {
 }
 
 updateWrongCount();
+
+function restartCurrentQuiz() {
+  if (quizMode === "wrong") {
+    startWrongQuiz();
+  } else if (quizSource === "full") {
+    startFullQuiz(fullQuizOrder);
+  } else {
+    startQuiz(10);
+  }
+}
 
 function escapeHtml(text) {
   return text.replace(/[&<>"']/g, function(m) {
