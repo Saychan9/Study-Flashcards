@@ -1,1 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>農産・衛生管理 フラッシュカード</title>
+<style>
+  * { box-sizing: border-box; }
 
+  :root {
+    --bg: #f3f7f5;
+    --surface: #ffffff;
+    --surface-soft: #f7faf9;
+    --primary: #2f7d61;
+    --primary-dark: #24664e;
+    --primary-soft: #e7f3ed;
+    --text: #19312a;
+    --muted: #6c7d76;
+    --border: #dce8e2;
+    --answer-bg: #edf8f1;
+    --answer-border: #4d9b70;
+    --shadow: 0 10px 30px rgba(31, 67, 54, .08);
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+                 "Yu Gothic", Meiryo, sans-serif;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(89, 164, 126, .12), transparent 28%),
+      var(--bg);
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  button, textarea {
+    font: inherit;
+  }
+
+  .wrap {
+    width: min(100% - 32px, 1180px);
+    margin: 0 auto;
+    padding: 18px 0 16px;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .sidebar-title {
+    margin: 0 0 4px;
+    font-size: 14px;
+  }
+
+  .sidebar-subtitle {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .main-content {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-content .score {
+    margin-top: 0;
+  }
+
+  .top-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 10px 0 8px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    flex: none;
+  }
+
+  .study-actions,
+  .utility-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .mobile-utility {
+    display: none;
+  }
+
+  .desktop-utility {
+    display: flex;
+    margin-left: auto;
+    gap: 0;
+  }
+
+  .desktop-utility button {
+    border-radius: 0;
+  }
+
+  .desktop-utility button:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .desktop-utility button:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .study-actions {
+    gap: 0;
+  }
+
+  .study-actions button {
+    border-radius: 0;
+  }
+
+  .study-actions button:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .study-actions button:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .study-actions .review-button {
+    color: #5f5a9a;
+    border-color: #dcdaf2;
+    background: #faf9ff;
+  }
+
+  .study-actions .review-button:hover {
+    background: #f0effb;
+  }
+
+  /* Header */
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex: none;
+  }
+
+  .utility-actions {
+    flex: none;
+  }
+
+  .utility-actions button {
+    min-height: 36px;
+    padding: 7px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  h1 {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    font-size: clamp(16px, 4.2vw, 26px);
+    line-height: 1.25;
+    margin: 0;
+    letter-spacing: -.02em;
+    flex: none;
+  }
+
+  .wrap::before {
+    content: "FLASH CARD";
+    display: block;
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    margin-bottom: 3px;
+    flex: none;
+  }
+
+  /* Menu */
+  .menu {
+    display: none;
+  }
+
+  .menu-label {
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .08em;
+  }
+
+  .menu-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .review-group .secondary {
+    color: #5f5a9a;
+    border-color: #dcdaf2;
+    background: #faf9ff;
+  }
+
+  .review-group .secondary:hover {
+    background: #f0effb;
+  }
+
+  button {
+    min-height: 36px;
+    border: 0;
+    border-radius: 10px;
+    padding: 7px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:active {
+    transform: scale(.98);
+  }
+
+  .primary {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 5px 14px rgba(47, 125, 97, .20);
+  }
+
+  .primary:hover {
+    background: var(--primary-dark);
+  }
+
+  .secondary {
+    background: var(--surface);
+    color: var(--primary);
+    border: 1px solid var(--border);
+  }
+
+  .secondary:hover {
+    background: var(--surface-soft);
+  }
+
+  /* Progress */
+  .score {
+    margin: 0 0 7px;
+    padding: 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-align: center;
+    flex: none;
+  }
+
+  /* Quiz area fills remaining screen height */
+  #quiz {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Question card */
+  .card {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid rgba(220, 232, 226, .9);
+    border-radius: 18px;
+    padding: clamp(13px, 3.6vw, 22px);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .meta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 3px 9px;
+    margin-bottom: 7px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    flex: none;
+  }
+
+  .question {
+    font-size: clamp(15px, 4vw, 21px);
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    letter-spacing: -.015em;
+    flex: none;
+  }
+
+  .hint {
+    color: var(--primary-dark);
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    flex: none;
+  }
+
+  /* Everything below the question can scroll internally as a safety net,
+     but is sized to fit on screen for normal-length answers */
+  .scroll-area {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  textarea {
+    display: block;
+    width: 100%;
+    height: 56px;
+    min-height: 44px;
+    padding: 9px 11px;
+    border-radius: 11px;
+    border: 1.5px solid var(--border);
+    background: #fbfdfc;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    flex: none;
+  }
+
+  textarea::placeholder {
+    color: #9aa9a3;
+  }
+
+  textarea:focus {
+    border-color: #78ad98;
+    box-shadow: 0 0 0 4px rgba(47, 125, 97, .10);
+    background: #fff;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+    flex: none;
+  }
+
+  .answer {
+    display: none;
+    margin-top: 9px;
+    padding: 11px 12px;
+    background: var(--answer-bg);
+    border: 1px solid #cfe8d8;
+    border-left: 5px solid var(--answer-border);
+    border-radius: 11px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    font-size: 13.5px;
+    flex: none;
+  }
+
+  .answer.show {
+    display: block;
+    animation: answerIn .18s ease-out;
+  }
+
+  .mark-actions {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+    flex: none;
+  }
+
+  .mark-actions.show {
+    display: grid;
+  }
+
+  .correct {
+    background: #3f8f63;
+    color: #fff;
+  }
+
+  .wrong {
+    background: #c76855;
+    color: #fff;
+  }
+
+  .wrong-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    width: 100%;
+    overflow-y: auto;
+    margin: 8px 0;
+  }
+
+  .wrong-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 10px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .wrong-item input {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+  }
+
+  .wrong-item-text {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .manage-tools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin: 8px 0;
+  }
+
+  .manual-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    padding: 18px 12px;
+    background: rgba(25, 49, 42, .38);
+  }
+
+  .manual-overlay.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .manual-box {
+    width: min(100%, 680px);
+    max-height: 90dvh;
+    overflow-y: auto;
+    padding: 18px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .manual-box h2 {
+    margin: 0 0 12px;
+    font-size: 19px;
+  }
+
+  .manual-box h3 {
+    margin: 16px 0 5px;
+    font-size: 14px;
+    color: var(--primary-dark);
+  }
+
+  .manual-box p {
+    margin: 5px 0;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .manual-box ol {
+    margin: 6px 0 8px;
+    padding-left: 22px;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .manual-box .secondary {
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  @keyframes answerIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .note {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 10.5px;
+    line-height: 1.5;
+    flex: none;
+  }
+
+  .done {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 14px;
+  }
+
+  .done h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+  }
+
+  .done p {
+    margin: 0 0 16px;
+    color: var(--muted);
+  }
+
+  /* Extra-short screens: trim a little further */
+  @media (max-height: 620px) {
+    h1 { font-size: 15px; }
+    button { min-height: 32px; font-size: 11px; padding: 6px; }
+    textarea { height: 44px; }
+  }
+
+  @media (max-width: 699px) {
+    .wrap {
+      width: min(100% - 24px, 760px);
+      padding-top: 12px;
+    }
+
+    .header-row {
+      align-items: flex-start;
+    }
+
+    .utility-actions {
+      gap: 4px;
+    }
+
+    .mobile-utility {
+      display: flex;
+      gap: 0;
+    }
+
+    .mobile-utility button {
+      min-height: 30px;
+      width: auto;
+      padding: 5px 1px;
+      font-size: 9px;
+      border-radius: 0;
+      white-space: nowrap;
+    }
+
+    .mobile-utility button:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .mobile-utility button:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .desktop-utility {
+      display: none !important;
+    }
+
+    .utility-actions button {
+      min-height: 30px;
+      padding: 5px 1px;
+      font-size: 9px;
+    }
+
+    .top-menu {
+      display: block;
+      margin: 6px 0 5px;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .study-actions {
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      width: 100%;
+      min-width: 0;
+      gap: 0;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .utility-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0;
+      width: auto;
+      min-width: 0;
+      padding: 0;
+      border-top: 0;
+    }
+
+    .header-row {
+      gap: 5px;
+    }
+
+    h1 {
+      min-width: 0;
+      min-height: 28px;
+      font-size: 14px;
+      line-height: 1.1;
+      white-space: nowrap;
+      letter-spacing: -.06em;
+    }
+
+    .utility-actions button {
+      min-height: 28px;
+      padding: 4px 5px;
+      font-size: 9px;
+      white-space: nowrap;
+    }
+
+    .top-menu button {
+      min-width: 0;
+      min-height: 30px;
+      width: 0;
+      padding: 5px 1px;
+      font-size: 9px;
+      letter-spacing: -.06em;
+      white-space: nowrap;
+      flex: 1 1 0;
+      border-radius: 0;
+    }
+
+    .study-actions button:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .study-actions button:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .study-actions .review-button {
+      min-height: 30px;
+    }
+
+    .main-content .score {
+      padding: 4px 8px;
+      margin-bottom: 4px;
+      font-size: 10px;
+    }
+
+    #quiz {
+      overflow: visible;
+    }
+
+    .card {
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .meta {
+      min-height: 18px;
+      padding: 2px 7px;
+      margin-bottom: 4px;
+      font-size: 10px;
+    }
+
+    .question {
+      font-size: 16px;
+      line-height: 1.28;
+      margin-bottom: 4px;
+    }
+
+    .hint {
+      margin-bottom: 4px;
+      font-size: 10px;
+    }
+
+    .scroll-area {
+      overflow: visible;
+      flex: none;
+    }
+
+    textarea {
+      height: 44px;
+      min-height: 40px;
+      padding: 7px 9px;
+      font-size: 13px;
+    }
+
+    .actions,
+    .mark-actions {
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .actions button,
+    .mark-actions button {
+      min-height: 32px;
+      padding: 5px 4px;
+      font-size: 11px;
+    }
+
+    .answer {
+      margin-top: 5px;
+      padding: 7px 8px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .mark-actions.show {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      padding: 5px 0 0;
+      background: var(--surface);
+    }
+
+    .note {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-row">
+    <h1>🌱 農産・衛生管理 フラッシュカード</h1>
+    <div class="utility-actions mobile-utility">
+      <button class="secondary" onclick="showManual()">説明書</button>
+      <button class="secondary" onclick="resetQuiz()">最初に戻る</button>
+    </div>
+  </div>
+
+  <div class="top-menu">
+    <div class="study-actions">
+      <button class="primary" onclick="startQuiz(10)">10問ランダム</button>
+      <button class="secondary" onclick="startQuiz(cards.length)">全問出題</button>
+      <button class="secondary review-button" id="wrongQuizButton" onclick="startWrongQuiz()">間違いを復習（0）</button>
+      <button class="secondary review-button" onclick="manageWrongCards()">間違いを整理</button>
+    </div>
+    <div class="utility-actions desktop-utility">
+      <button class="secondary" onclick="showManual()">説明書</button>
+      <button class="secondary" onclick="resetQuiz()">最初に戻る</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <main class="main-content">
+      <div id="score" class="score">出題方法を選んでください。</div>
+      <div id="quiz"></div>
+    </main>
+  </div>
+</div>
+
+<div id="manualOverlay" class="manual-overlay" role="dialog" aria-modal="true" aria-labelledby="manualTitle" onclick="if(event.target === this) hideManual()">
+  <div class="manual-box">
+    <h2 id="manualTitle">説明書</h2>
+    <h3>このツールの目的</h3>
+    <p>農産・衛生管理に関する問題を使って学習するためのフラッシュカードです。回答を入力し、正解を確認しながら学習できます。間違えた問題は保存され、あとから復習できます。</p>
+    <h3>通常の問題を解く方法</h3>
+    <ol>
+      <li>「10問ランダム」または「全問出題」を押します。</li>
+      <li>問題を読み、回答欄に自分の答えを入力します。</li>
+      <li>「答えを見る」を押して正解を確認します。</li>
+      <li>正しければ「正解だった」、間違っていれば「間違えた」を押します。</li>
+      <li>判定後、自動的に次の問題へ進みます。</li>
+    </ol>
+    <h3>正解・間違い判定について</h3>
+    <p>「正解だった」を押すと、その問題は間違い復習リストから外れます。「間違えた」を押した問題は保存され、あとから「間違いを復習」で復習できます。</p>
+    <h3>間違い問題を管理する方法</h3>
+    <p>「間違いを復習（件数）」では保存された問題だけを復習できます。「間違いを整理」では、問題を個別に選択して削除できます。全選択してから削除することもできます。</p>
+    <h3>各ボタンについて</h3>
+    <p>「最初に戻る」は現在のテストを終了する機能です。間違い登録は消えません。間違い登録は同じブラウザ内に保存され、別の端末やブラウザには自動で共有されません。</p>
+    <button class="secondary" onclick="hideManual()">閉じる</button>
+  </div>
+</div>
+
+<script>
+const cards = [
+["カード1","アレルギーについてお客様から質問されたら、どう対応する？","即答を避け、仕様書などで確認して対応する。\n「お調べいたしますので、少々お待ちください」と伝える。"],
+["カード2","まな板を洗浄するとき、最初に何をする？","流水で汚れを落とす。"],
+["カード3","まな板を洗うブラシは？","まな板専用の白いブラシ。"],
+["カード4","まな板はどの部分を洗う？","表・裏・側面。"],
+["カード5","まな板はどのようにこする？","傷目に沿って、縦・横・斜めにこする。"],
+["カード6","まな板を洗った後は？","流水ですすぎ、新しいふきんで水気をふき取る。"],
+["カード7","まな板へのアルコールスプレーは、何センチ離す？","15センチ。",true],
+["カード8","まな板へのアルコールスプレーは、何センチ間隔？","10センチ間隔。",true],
+["カード9","まな板の殺菌には何を使う？","塩素系漂白剤250倍希釈液。"],
+["カード10","塩素系漂白剤250倍希釈液は、水5リットルに漂白剤何ミリリットル？","20ミリリットル。",true],
+["カード11","まな板に殺菌液をかけた後、何分置く？","15分。",true],
+["カード12","15分後はどうする？","流水で十分にすすぎ、新しいふきんで水分をふき取る。"],
+["カード13","包丁を洗うときに使う洗剤は？","中性洗剤。"],
+["カード14","包丁はどこを洗う？","刃・柄・刃の付け根。"],
+["カード15","洗浄した包丁はどこに保管する？","包丁殺菌庫。"],
+["カード16","包丁殺菌庫に片付けるとき、アルコールをする？","しない。"],
+["カード17","作業前、包丁のどこにアルコールをする？","刃・柄・刃の付け根。"],
+["カード18","クリーンタイムのアルコール消毒箇所5つは？","①スイングドア\n②冷蔵庫・冷凍庫の取っ手\n③アルコールスプレー\n④手洗いシンクコック\n⑤洗浄シンクコック"],
+["カード19","特定原材料8品目を言ってください。","そば・落花生・乳・卵・小麦・えび・かに・くるみ。"],
+["カード20","体調チェック項目を言ってください。","発熱（37.5℃以上）\n下痢・腹痛\n吐き気・嘔吐\n手指の傷・荒れ\n目・耳・鼻からの分泌物がない\n黄疸"],
+["カード21","実技の手洗いは何分間？","1分間。",true],
+["カード22","拭取検査をする場所は？","包丁（保管分）の刃。\nアルコールスプレーボトルのヘッド部分。"],
+["カード23","農産では何を確認しながら製造する？","製造仕様書を確認しながら製造する。"],
+["カード24","農産のラベル貼付時に何をする？","3点一致を指さし、声出し確認をして、ラベルを貼付する。"],
+["カード25","白衣の交換頻度は？","日曜日と水曜日の週2回。",true],
+
+["カード26","まな板へのアルコールは？","15センチ離して、10センチ間隔。",true],
+["カード27","まな板の殺菌倍率は？","250倍。",true],
+["カード28","水5リットルに漂白剤は？","20ミリリットル。",true],
+["カード29","まな板の殺菌時間は？","15分。",true],
+["カード30","手洗いは何分間？","1分間。",true],
+["カード31","白衣の交換は？","日曜日と水曜日、週2回。",true]
+];
+
+let quizCards = [];
+let current = 0;
+let quizMode = "normal";
+const WRONG_KEY = "agriFlashcardWrongIds";
+
+function getWrongIds() {
+  try {
+    return JSON.parse(localStorage.getItem(WRONG_KEY) || "[]");
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveWrongIds(ids) {
+  localStorage.setItem(WRONG_KEY, JSON.stringify([...new Set(ids)]));
+  updateWrongCount();
+}
+
+function updateWrongCount() {
+  const button = document.getElementById("wrongQuizButton");
+  if (button) button.textContent = `間違いを復習（${getWrongIds().length}）`;
+}
+
+function startWrongQuiz() {
+  const wrongIds = getWrongIds();
+  quizMode = "wrong";
+  quizCards = shuffle(cards.filter(card => wrongIds.includes(card[0])));
+  current = 0;
+  if (quizCards.length === 0) {
+    document.getElementById("score").textContent = "復習対象なし";
+    document.getElementById("quiz").innerHTML = `
+      <div class="card done">
+        <h2>復習対象はありません</h2>
+        <p>問題を解いて「間違えた」を押すと、ここに登録されます。</p>
+      </div>`;
+    return;
+  }
+  renderQuestion();
+}
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function startQuiz(count) {
+  quizMode = "normal";
+  quizCards = shuffle(cards).slice(0, count);
+  current = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizCards[current];
+  document.getElementById("score").textContent =
+    `第 ${current + 1} 問 / ${quizCards.length} 問　（間違い登録：${getWrongIds().length}問）`;
+
+  const numberHint = q[3] ? `<div class="hint">※数字で答えてください。</div>` : "";
+
+  document.getElementById("quiz").innerHTML = `
+    <div class="card">
+      <div class="meta">${q[0]}</div>
+      <div class="question">${escapeHtml(q[1])}</div>
+      ${numberHint}
+      <div class="scroll-area">
+        <textarea id="userAnswer" placeholder="答えを自由に記入してください"></textarea>
+        <div class="actions">
+          <button class="primary" onclick="showAnswer()">答えを見る</button>
+          <button class="secondary" onclick="nextQuestion()">判定せず次へ ▶</button>
+        </div>
+        <div id="answer" class="answer"><strong>正解：</strong>${escapeHtml(q[2])}</div>
+        <div id="markActions" class="mark-actions">
+          <button class="correct" onclick="markAnswer(true)">正解だった</button>
+          <button class="wrong" onclick="markAnswer(false)">間違えた</button>
+        </div>
+        <div class="note">※自由記載なので、自分の答えを書いてから「答えを見る」で確認してください。</div>
+      </div>
+    </div>`;
+}
+
+
+function resetQuiz() {
+  quizMode = "normal";
+  quizCards = [];
+  current = 0;
+  document.getElementById("score").textContent = "出題方法を選んでください。";
+  document.getElementById("quiz").innerHTML = "";
+}
+
+function showAnswer() {
+  document.getElementById("answer").classList.add("show");
+  document.getElementById("markActions").classList.add("show");
+} 
+
+function markAnswer(isCorrect) {
+  const cardId = quizCards[current][0];
+  const wrongIds = getWrongIds();
+  const updatedIds = isCorrect
+    ? wrongIds.filter(id => id !== cardId)
+    : [...wrongIds, cardId];
+  saveWrongIds(updatedIds);
+  nextQuestion();
+}
+
+function showManual() {
+  document.getElementById("manualOverlay").classList.add("show");
+}
+
+function hideManual() {
+  document.getElementById("manualOverlay").classList.remove("show");
+}
+
+function manageWrongCards() {
+  const wrongIds = getWrongIds();
+  document.getElementById("score").textContent = `間違い問題の管理（${wrongIds.length}問）`;
+
+  if (wrongIds.length === 0) {
+    document.getElementById("quiz").innerHTML = `
+      <div class="card done">
+        <h2>間違い問題はありません</h2>
+        <p>問題を解いて「間違えた」を押すと、ここに登録されます。</p>
+        <button class="primary" onclick="resetQuiz()">戻る</button>
+      </div>`;
+    return;
+  }
+
+  const wrongCards = cards.filter(card => wrongIds.includes(card[0]));
+  document.getElementById("quiz").innerHTML = `
+    <div class="card">
+      <div class="meta">間違い問題を選択</div>
+      <div class="question">削除したい問題にチェックを入れてください。</div>
+      <div class="manage-tools">
+        <button class="secondary" onclick="toggleAllWrong(true)">全選択</button>
+        <button class="secondary" onclick="toggleAllWrong(false)">全解除</button>
+      </div>
+      <div class="wrong-list">
+        ${wrongCards.map(card => `
+          <label class="wrong-item">
+            <input type="checkbox" class="wrong-check" value="${escapeHtml(card[0])}">
+            <span class="wrong-item-text"><strong>${escapeHtml(card[0])}</strong><br>${escapeHtml(card[1])}</span>
+          </label>`).join("")}
+      </div>
+      <div class="actions">
+        <button class="wrong" onclick="deleteSelectedWrongCards()">選択した問題を削除</button>
+        <button class="secondary" onclick="resetQuiz()">戻る</button>
+      </div>
+      <div class="note">※削除した問題は「間違いだけ」の復習対象から外れます。</div>
+    </div>`;
+}
+
+function toggleAllWrong(checked) {
+  document.querySelectorAll(".wrong-check").forEach(input => {
+    input.checked = checked;
+  });
+}
+
+function deleteSelectedWrongCards() {
+  const selectedIds = [...document.querySelectorAll(".wrong-check:checked")].map(input => input.value);
+  if (selectedIds.length === 0) {
+    alert("削除する問題を選択してください。");
+    return;
+  }
+  if (confirm(`${selectedIds.length}問を間違いリストから削除しますか？`)) {
+    saveWrongIds(getWrongIds().filter(id => !selectedIds.includes(id)));
+    manageWrongCards();
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= quizCards.length) {
+    document.getElementById("score").textContent = "終了";
+    document.getElementById("quiz").innerHTML = `
+      <div class="card done">
+        <h2>🎉 お疲れさまでした！</h2>
+        <p>${quizCards.length}問すべて終了しました。<br>現在の間違い登録：${getWrongIds().length}問</p>
+        <button class="primary" onclick="${quizMode === "wrong" ? "startWrongQuiz()" : `startQuiz(${quizCards.length})`}">${quizMode === "wrong" ? "間違い問題をもう一度" : "もう一度ランダム出題"}</button>
+      </div>`;
+  } else {
+    renderQuestion();
+  }
+}
+
+updateWrongCount();
+
+function escapeHtml(text) {
+  return text.replace(/[&<>"']/g, function(m) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m];
+  });
+}
+</script>
+</body>
+</html>
