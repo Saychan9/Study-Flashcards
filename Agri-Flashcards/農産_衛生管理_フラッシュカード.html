@@ -136,6 +136,11 @@
     gap: 0;
   }
 
+  /* Study menu only: slightly larger labels */
+  .study-actions button {
+    font-size: 13px;
+  }
+
   .study-actions button {
     border-radius: 0;
   }
@@ -175,7 +180,13 @@
     min-height: 36px;
     padding: 7px 6px;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 13px;
+  }
+
+  /* Menu labels: emphasize text without changing size or layout */
+  .top-menu button,
+  .utility-actions button {
+    font-weight: 800;
   }
 
   /* PC utility buttons: keep the same connected shape as the study bar */
@@ -734,7 +745,7 @@
     .utility-actions button {
       min-height: 28px;
       padding: 4px 5px;
-      font-size: 9px;
+      font-size: 10px;
       white-space: nowrap;
     }
 
@@ -743,7 +754,7 @@
       min-height: 30px;
       width: 0;
       padding: 5px 1px;
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: -.06em;
       white-space: nowrap;
       flex: 1 1 0;
